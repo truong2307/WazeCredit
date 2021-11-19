@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using WazeCredit.Data;
+using WazeCredit.Service;
 
 namespace WazeCredit
 {
@@ -34,6 +35,11 @@ namespace WazeCredit
 
             services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
                 .AddEntityFrameworkStores<ApplicationDbContext>();
+
+            services.AddTransient<IMarketForecaster, MarketForecasterV2>();
+            // Change DI 
+            //services.AddTransient<IMarketForecaster, MarketForecaster>();
+
             services.AddControllersWithViews();
         }
 
