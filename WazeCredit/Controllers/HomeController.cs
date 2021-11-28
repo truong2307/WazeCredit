@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -8,19 +9,48 @@ using System.Threading.Tasks;
 using WazeCredit.Models;
 using WazeCredit.Models.ViewModels;
 using WazeCredit.Service;
+using WazeCredit.Utility.AppSettingsClasses;
 
 namespace WazeCredit.Controllers
 {
     public class HomeController : Controller
     {
         public HomeVM homeVM { get; set; }
-
         private readonly IMarketForecaster _marketForecaster;
-        public HomeController(IMarketForecaster marketForecaster)
+        private readonly StripeSettings _stripeOptions;
+        private readonly SendGridSettings _sendGridOptions;
+        private readonly TwilloSettings _twilloOptions;
+        private readonly WazeForecastSettings _wazeForecastOptions;
+
+        public HomeController(IMarketForecaster marketForecaster
+            , IOptions<SendGridSettings> sendGridOptions
+            , IOptions<StripeSettings> stripeOptions
+            , IOptions<TwilloSettings> twilloOptions
+            , IOptions<WazeForecastSettings> wazeForecastOptions
+            )
         {
             homeVM = new HomeVM();
             _marketForecaster = marketForecaster;
+            _sendGridOptions = sendGridOptions.Value;
+            _twilloOptions = twilloOptions.Value;
+            _stripeOptions = stripeOptions.Value;
+            _wazeForecastOptions = wazeForecastOptions.Value;
         }
+
+        public IActionResult AllConfigSettings()
+        {
+            List<string> messages = new List<string>();
+            messages.Add($"Waze config - Forecast Tracker: " + _wazeForecastOptions.ForecastTrackerEnabled);
+            messages.Add($"Stripe Publishable Key: " + _stripeOptions.PublishableKey);
+            messages.Add($"Stripe Secret Key: " + _stripeOptions.SecretKey);
+            messages.Add($"Send Grid Key: " + _sendGridOptions.SendGridKey);
+            messages.Add($"Twillo Phone: " + _twilloOptions.PhoneNumber);
+            messages.Add($"Twillo SID: " + _twilloOptions.AccountSid);
+            messages.Add($"Twillo Token: " + _twilloOptions.AuthToken);
+
+            return View(messages);
+        }
+
         public IActionResult Index()
         {
             MarketResult currentMarket = _marketForecaster.GetMarketPrediction();
