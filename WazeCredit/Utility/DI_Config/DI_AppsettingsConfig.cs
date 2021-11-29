@@ -7,6 +7,12 @@ namespace WazeCredit.Utility.DI_Config
 {
     public static class DI_AppsettingsConfig
     {
+        /// <summary>
+        /// Get section value to classes (TOptions)
+        /// </summary>
+        /// <param name="services">service collection</param>
+        /// <param name="configuration">configuration</param>
+        /// <returns></returns>
         public static IServiceCollection AddAppSettingsConfig(this IServiceCollection services
                     , IConfiguration configuration)
         {
