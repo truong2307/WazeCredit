@@ -24,10 +24,10 @@ namespace WazeCredit.Controllers
             {
                 HttpContext.Items["CustomMiddleWareTransient"].ToString(),
                 $"Transient Controller - {_transientService.GetGuid()}",
-                HttpContext.Items["CustomMiddleWareSingleton"].ToString(),
-                $"Singleton Controller - {_singletonService.GetGuid()}",
                 HttpContext.Items["CustomMiddleWareScoped"].ToString(),
-                $"Scoped Controller - {_scopedService.GetGuid()}"
+                $"Scoped Controller - {_scopedService.GetGuid()}",
+                HttpContext.Items["CustomMiddleWareSingleton"].ToString(),
+                $"Singleton Controller - {_singletonService.GetGuid()}"
             };
 
             return View(messages);
