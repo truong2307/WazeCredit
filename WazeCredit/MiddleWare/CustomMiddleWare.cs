@@ -8,7 +8,7 @@ namespace WazeCredit.MiddleWare
     {
 
         /// <summary>
-        /// RequestDelegateis a function that can process an HTTP request.
+        /// RequestDelegate is a function that can process an HTTP request.
         /// </summary>
         private readonly RequestDelegate _next;
         public CustomMiddleWare(RequestDelegate next)

@@ -14,6 +14,7 @@ using System.Threading.Tasks;
 using WazeCredit.Data;
 using WazeCredit.MiddleWare;
 using WazeCredit.Service;
+using WazeCredit.Service.LifeTimeExample;
 using WazeCredit.Utility.AppSettingsClasses;
 using WazeCredit.Utility.DI_Config;
 
@@ -45,6 +46,10 @@ namespace WazeCredit
 
             //Config AppSettings key to containter
             services.AddAppSettingsConfig(Configuration);
+
+            services.AddTransient<TransientService>();
+            services.AddScoped<ScopedService>();
+            services.AddSingleton<SingletonService>();
 
             services.AddControllersWithViews();
         }
