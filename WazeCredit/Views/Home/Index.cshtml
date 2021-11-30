@@ -1,5 +1,7 @@
 ﻿@model WazeCredit.Models.ViewModels.HomeVM
 
+@using Microsoft.Extensions.Options
+@inject IOptions<WazeCredit.Utility.AppSettingsClasses.WazeForecastSettings> wazeForecasrSettings
 
 @{
     ViewData["Title"] = "Home Page";
@@ -8,4 +10,5 @@
 <div class="text-center">
     <h1 class="display-4">Welcome</h1>
     <p>@Model.MarketForecast</p>
+    <p>Current Market Prediction Status: @(wazeForecasrSettings.Value.ForecastTrackerEnabled?"Online":"Offline")</p>
 </div>
