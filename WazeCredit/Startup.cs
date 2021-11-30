@@ -44,6 +44,14 @@ namespace WazeCredit
             // Change DI 
             //services.AddTransient<IMarketForecaster, MarketForecaster>();
 
+            // Different way to regiter service
+            //services.AddSingleton<IMarketForecaster>(new MarketForecasterV2());
+            //services.AddTransient<MarketForecasterV2>();
+            //services.AddSingleton(new MarketForecasterV2());
+            //services.AddTransient(typeof(MarketForecasterV2));
+            //services.AddTransient(typeof(IMarketForecaster), typeof(MarketForecasterV2));
+
+
             //Config AppSettings key to containter
             services.AddAppSettingsConfig(Configuration);
 
