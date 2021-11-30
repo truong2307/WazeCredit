@@ -17,36 +17,38 @@ namespace WazeCredit.Controllers
     {
         public HomeVM homeVM { get; set; }
         private readonly IMarketForecaster _marketForecaster;
-        private readonly StripeSettings _stripeOptions;
-        private readonly SendGridSettings _sendGridOptions;
-        private readonly TwilloSettings _twilloOptions;
         private readonly WazeForecastSettings _wazeForecastOptions;
 
         public HomeController(IMarketForecaster marketForecaster
-            , IOptions<SendGridSettings> sendGridOptions
-            , IOptions<StripeSettings> stripeOptions
-            , IOptions<TwilloSettings> twilloOptions
-            , IOptions<WazeForecastSettings> wazeForecastOptions
-            )
+            , IOptions<WazeForecastSettings> wazeForecastOptions)
         {
             homeVM = new HomeVM();
             _marketForecaster = marketForecaster;
-            _sendGridOptions = sendGridOptions.Value;
-            _twilloOptions = twilloOptions.Value;
-            _stripeOptions = stripeOptions.Value;
             _wazeForecastOptions = wazeForecastOptions.Value;
         }
 
-        public IActionResult AllConfigSettings()
+        /// <summary>
+        /// The FromServices Attribute enables injecting a service directly into an action method 
+        /// without using constructor injection
+        /// </summary>
+        /// <param name="sendGridOptions"></param>
+        /// <param name="stripeOptions"></param>
+        /// <param name="twilloOptions"></param>
+        /// <returns></returns>
+        public IActionResult AllConfigSettings(
+            [FromServices] IOptions<SendGridSettings> sendGridOptions,
+            [FromServices] IOptions<StripeSettings> stripeOptions,
+            [FromServices] IOptions<TwilloSettings> twilloOptions
+            )
         {
             List<string> messages = new List<string>();
             messages.Add($"Waze config - Forecast Tracker: " + _wazeForecastOptions.ForecastTrackerEnabled);
-            messages.Add($"Stripe Publishable Key: " + _stripeOptions.PublishableKey);
-            messages.Add($"Stripe Secret Key: " + _stripeOptions.SecretKey);
-            messages.Add($"Send Grid Key: " + _sendGridOptions.SendGridKey);
-            messages.Add($"Twillo Phone: " + _twilloOptions.PhoneNumber);
-            messages.Add($"Twillo SID: " + _twilloOptions.AccountSid);
-            messages.Add($"Twillo Token: " + _twilloOptions.AuthToken);
+            messages.Add($"Stripe Publishable Key: " + stripeOptions.Value.PublishableKey);
+            messages.Add($"Stripe Secret Key: " + stripeOptions.Value.SecretKey);
+            messages.Add($"Send Grid Key: " + sendGridOptions.Value.SendGridKey);
+            messages.Add($"Twillo Phone: " + twilloOptions.Value.PhoneNumber);
+            messages.Add($"Twillo SID: " + twilloOptions.Value.AccountSid);
+            messages.Add($"Twillo Token: " + twilloOptions.Value.AuthToken);
 
             return View(messages);
         }
