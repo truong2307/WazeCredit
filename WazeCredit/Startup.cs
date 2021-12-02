@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Identity.UI;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using System;
 using System.Collections.Generic;
@@ -44,13 +45,16 @@ namespace WazeCredit
             // Change DI 
             //services.AddTransient<IMarketForecaster, MarketForecaster>();
 
-            // Different way to regiter service
+            // Different way to register service
             //services.AddSingleton<IMarketForecaster>(new MarketForecasterV2());
             //services.AddTransient<MarketForecasterV2>();
             //services.AddSingleton(new MarketForecasterV2());
             //services.AddTransient(typeof(MarketForecasterV2));
             //services.AddTransient(typeof(IMarketForecaster), typeof(MarketForecasterV2));
 
+            // use try add to check service be signed before or not if not signed then use MarketForecaster
+            // else use MarketForecasterV2
+            services.TryAddTransient<IMarketForecaster, MarketForecaster>();
 
             //Config AppSettings key to containter
             services.AddAppSettingsConfig(Configuration);
