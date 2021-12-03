@@ -18,6 +18,8 @@ namespace WazeCredit.Controllers
         public HomeVM homeVM { get; set; }
         private readonly IMarketForecaster _marketForecaster;
         private readonly WazeForecastSettings _wazeForecastOptions;
+        [BindProperty]
+        private CreditApplication _creditApplication { get; set; }
 
         public HomeController(IMarketForecaster marketForecaster
             , IOptions<WazeForecastSettings> wazeForecastOptions)
@@ -25,6 +27,12 @@ namespace WazeCredit.Controllers
             homeVM = new HomeVM();
             _marketForecaster = marketForecaster;
             _wazeForecastOptions = wazeForecastOptions.Value;
+        }
+
+        public IActionResult CreditApplication()
+        {
+            _creditApplication = new CreditApplication();
+            return View(_creditApplication);
         }
 
         /// <summary>
