@@ -42,19 +42,28 @@ namespace WazeCredit
                 .AddEntityFrameworkStores<ApplicationDbContext>();
 
             services.AddTransient<IMarketForecaster, MarketForecasterV2>();
+
             // Change DI 
             //services.AddTransient<IMarketForecaster, MarketForecaster>();
 
-            // Different way to register service
+            /* Different way to register service
             //services.AddSingleton<IMarketForecaster>(new MarketForecasterV2());
             //services.AddTransient<MarketForecasterV2>();
             //services.AddSingleton(new MarketForecasterV2());
             //services.AddTransient(typeof(MarketForecasterV2));
-            //services.AddTransient(typeof(IMarketForecaster), typeof(MarketForecasterV2));
+            services.AddTransient(typeof(IMarketForecaster), typeof(MarketForecasterV2));
+            
 
             // use try add to check service be signed before or not if not signed then use MarketForecaster
             // else use MarketForecasterV2
             services.TryAddTransient<IMarketForecaster, MarketForecaster>();
+
+            // replace service MarketForecaster on service MarketForecasterV2
+            services.Replace(ServiceDescriptor.Transient<IMarketForecaster, MarketForecaster>());
+
+            // remove all service be signed by IMarketForecaster
+            services.RemoveAll<IMarketForecaster>();
+            */
 
             //Config AppSettings key to containter
             services.AddAppSettingsConfig(Configuration);
