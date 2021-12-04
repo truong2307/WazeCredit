@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
+using WazeCredit.Data;
 using WazeCredit.Models;
 using WazeCredit.Models.ViewModels;
 using WazeCredit.Service;
@@ -19,18 +20,21 @@ namespace WazeCredit.Controllers
         private readonly IMarketForecaster _marketForecaster;
         private readonly WazeForecastSettings _wazeForecastOptions;
         private readonly ICreditValidator _creditValidator;
+        private readonly ApplicationDbContext _db;
 
         [BindProperty]
         public CreditApplication _creditApplication { get; set; }
 
         public HomeController(IMarketForecaster marketForecaster
             , IOptions<WazeForecastSettings> wazeForecastOptions
-            , ICreditValidator creditValidator)
+            , ICreditValidator creditValidator
+            , ApplicationDbContext db)
         {
             homeVM = new HomeVM();
             _marketForecaster = marketForecaster;
             _wazeForecastOptions = wazeForecastOptions.Value;
             _creditValidator = creditValidator;
+            _db = db;
         }
 
         public IActionResult CreditApplication()
@@ -56,6 +60,10 @@ namespace WazeCredit.Controllers
                 };
                 if (validationPassed)
                 {
+                    _db.Add(_creditApplication);
+                    _db.SaveChanges();
+                    creditResult.CreditID = _creditApplication.Id;
+
                     return RedirectToAction(nameof(CreditResult), creditResult);
                 }
                 else
