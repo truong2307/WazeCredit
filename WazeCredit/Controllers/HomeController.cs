@@ -18,21 +18,57 @@ namespace WazeCredit.Controllers
         public HomeVM homeVM { get; set; }
         private readonly IMarketForecaster _marketForecaster;
         private readonly WazeForecastSettings _wazeForecastOptions;
+        private readonly ICreditValidator _creditValidator;
+
         [BindProperty]
-        private CreditApplication _creditApplication { get; set; }
+        public CreditApplication _creditApplication { get; set; }
 
         public HomeController(IMarketForecaster marketForecaster
-            , IOptions<WazeForecastSettings> wazeForecastOptions)
+            , IOptions<WazeForecastSettings> wazeForecastOptions
+            , ICreditValidator creditValidator)
         {
             homeVM = new HomeVM();
             _marketForecaster = marketForecaster;
             _wazeForecastOptions = wazeForecastOptions.Value;
+            _creditValidator = creditValidator;
         }
 
         public IActionResult CreditApplication()
         {
             _creditApplication = new CreditApplication();
             return View(_creditApplication);
+        }
+
+        [ValidateAntiForgeryToken]
+        [HttpPost]
+        [ActionName("CreditApplication")]
+        public async Task<IActionResult> CreditApplicationPost()
+        {
+            if (ModelState.IsValid)
+            {
+                var (validationPassed, errorMessages) = await _creditValidator.PassAllValidator(_creditApplication);
+
+                CreditResult creditResult = new CreditResult
+                {
+                    ErrorList = errorMessages,
+                    CreditID = 0,
+                    Success = validationPassed
+                };
+                if (validationPassed)
+                {
+                    return RedirectToAction(nameof(CreditResult), creditResult);
+                }
+                else
+                {
+                    return RedirectToAction(nameof(CreditResult), creditResult);
+                }
+            }
+            return View(_creditApplication);
+        }
+
+        public IActionResult CreditResult(CreditResult creditResult)
+        {
+            return View(creditResult);
         }
 
         /// <summary>
