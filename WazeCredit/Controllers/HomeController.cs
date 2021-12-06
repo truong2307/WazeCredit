@@ -46,7 +46,8 @@ namespace WazeCredit.Controllers
         [ValidateAntiForgeryToken]
         [HttpPost]
         [ActionName("CreditApplication")]
-        public async Task<IActionResult> CreditApplicationPost()
+        public async Task<IActionResult> CreditApplicationPost(
+            [FromServices] Func<CreditApprovedEnum, ICreditApproved> _creditService)
         {
             if (ModelState.IsValid)
             {
@@ -60,9 +61,15 @@ namespace WazeCredit.Controllers
                 };
                 if (validationPassed)
                 {
+                    _creditApplication.CreditApproved = _creditService(_creditApplication.Salary > 50000 ?
+                        CreditApprovedEnum.High
+                        : CreditApprovedEnum.Low).GetCreditApproved(_creditApplication);
+
+                    // record data to db
                     _db.Add(_creditApplication);
                     _db.SaveChanges();
                     creditResult.CreditID = _creditApplication.Id;
+                    creditResult.CreditApproved = _creditApplication.CreditApproved;
 
                     return RedirectToAction(nameof(CreditResult), creditResult);
                 }

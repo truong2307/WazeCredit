@@ -14,6 +14,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using WazeCredit.Data;
 using WazeCredit.MiddleWare;
+using WazeCredit.Models;
 using WazeCredit.Service;
 using WazeCredit.Service.LifeTimeExample;
 using WazeCredit.Utility.AppSettingsClasses;
@@ -88,6 +89,20 @@ namespace WazeCredit
             services.AddTransient<TransientService>();
             services.AddScoped<ScopedService>();
             services.AddSingleton<SingletonService>();
+
+            services.AddScoped<CreditApprovedHigh>();
+            services.AddScoped<CreditApprovedLow>();
+
+            // Register service with conditional
+            services.AddScoped<Func<CreditApprovedEnum, ICreditApproved>>(ServiceProvider => range =>
+            {
+                switch (range)
+                {
+                    case CreditApprovedEnum.Low: return ServiceProvider.GetService<CreditApprovedLow>();
+                    case CreditApprovedEnum.High: return ServiceProvider.GetService<CreditApprovedHigh>();
+                    default: return ServiceProvider.GetService<CreditApprovedLow>();
+                }
+            });
 
             services.AddControllersWithViews();
         }
