@@ -21,6 +21,7 @@ namespace WazeCredit.Controllers
         private readonly WazeForecastSettings _wazeForecastOptions;
         private readonly ICreditValidator _creditValidator;
         private readonly ApplicationDbContext _db;
+        private readonly ILogger _logger;
 
         [BindProperty]
         public CreditApplication _creditApplication { get; set; }
@@ -28,13 +29,15 @@ namespace WazeCredit.Controllers
         public HomeController(IMarketForecaster marketForecaster
             , IOptions<WazeForecastSettings> wazeForecastOptions
             , ICreditValidator creditValidator
-            , ApplicationDbContext db)
+            , ApplicationDbContext db
+            , ILogger<HomeController> logger)
         {
             homeVM = new HomeVM();
             _marketForecaster = marketForecaster;
             _wazeForecastOptions = wazeForecastOptions.Value;
             _creditValidator = creditValidator;
             _db = db;
+            _logger = logger;
         }
 
         public IActionResult CreditApplication()
@@ -61,6 +64,7 @@ namespace WazeCredit.Controllers
                 };
                 if (validationPassed)
                 {
+                    //get service by conditional
                     _creditApplication.CreditApproved = _creditService(_creditApplication.Salary > 50000 ?
                         CreditApprovedEnum.High
                         : CreditApprovedEnum.Low).GetCreditApproved(_creditApplication);
@@ -114,6 +118,8 @@ namespace WazeCredit.Controllers
 
         public IActionResult Index()
         {
+            _logger.LogInformation("Home controller index action called");
+
             MarketResult currentMarket = _marketForecaster.GetMarketPrediction();
 
             switch (currentMarket.MarketCondition)
@@ -132,6 +138,7 @@ namespace WazeCredit.Controllers
                         break;
             }
 
+            _logger.LogInformation("Home controller index action ended");
             return View(homeVM);    
         }
 
