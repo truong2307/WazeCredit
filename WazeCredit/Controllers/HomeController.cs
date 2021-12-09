@@ -7,6 +7,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using WazeCredit.Data;
+using WazeCredit.Data.Repository.IRepository;
 using WazeCredit.Models;
 using WazeCredit.Models.ViewModels;
 using WazeCredit.Service;
@@ -20,7 +21,7 @@ namespace WazeCredit.Controllers
         private readonly IMarketForecaster _marketForecaster;
         private readonly WazeForecastSettings _wazeForecastOptions;
         private readonly ICreditValidator _creditValidator;
-        private readonly ApplicationDbContext _db;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly ILogger _logger;
 
         [BindProperty]
@@ -30,13 +31,14 @@ namespace WazeCredit.Controllers
             , IOptions<WazeForecastSettings> wazeForecastOptions
             , ICreditValidator creditValidator
             , ApplicationDbContext db
-            , ILogger<HomeController> logger)
+            , ILogger<HomeController> logger
+            , IUnitOfWork unitOfWork)
         {
             homeVM = new HomeVM();
             _marketForecaster = marketForecaster;
             _wazeForecastOptions = wazeForecastOptions.Value;
             _creditValidator = creditValidator;
-            _db = db;
+            _unitOfWork = unitOfWork;
             _logger = logger;
         }
 
@@ -70,8 +72,8 @@ namespace WazeCredit.Controllers
                         : CreditApprovedEnum.Low).GetCreditApproved(_creditApplication);
 
                     // record data to db
-                    _db.Add(_creditApplication);
-                    _db.SaveChanges();
+                    _unitOfWork.CreditApplication.Add(_creditApplication);
+                    _unitOfWork.Save();
                     creditResult.CreditID = _creditApplication.Id;
                     creditResult.CreditApproved = _creditApplication.CreditApproved;
 
